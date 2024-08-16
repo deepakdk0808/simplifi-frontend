@@ -1,0 +1,183 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.App {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.App > div {
+  flex: 1; 
+  width: 50%; 
+  box-sizing: border-box; 
+}
+
+.firstDiv {
+  position: relative;
+  height: 100vh;
+  width: 100vw; /* Ensure the container covers full viewport width */
+  overflow: hidden;
+}
+
+.firstDiv > img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: auto; /* Maintain aspect ratio */
+  transform: translate(-50%, -50%); /* Center the image */
+  object-fit: cover; /* Cover the container while maintaining aspect ratio */
+}
+
+.brandImg {
+  /* border: 2px solid black; */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 13.5%;
+  margin-top: 2.1%;
+  margin-left: 43%;
+}
+
+.brandLine {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: medium;
+  font-weight: lighter;
+  margin-left: 39%;
+  margin-top: 6%;
+  line-height: 1;
+  word-spacing: 0.2em;
+  letter-spacing: 0.09em;
+}
+
+.extra-signin {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: medium;
+  font-weight: lighter;
+  margin-left: 27%;
+  margin-top: 16%;
+  line-height: 1;
+  word-spacing: 0.2em;
+  letter-spacing: 0.09em;
+}
+
+.custom-outline:focus {
+  outline-color: orange !important;
+  outline-style: solid;
+  outline-width: 1px;
+  border-color: orange !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25) !important;
+}
+
+.custom-formLabel {
+  font-weight: lighter;
+}
+
+.custom-button {
+  color: black;
+  background-color: orange !important;
+  border: transparent !important;
+  border-radius: 15px !important;
+}
+
+.bottom-right-alert {
+  position: absolute;
+  top: 10px; /* Adjust as needed */
+  left: 10px;  /* Adjust as needed */
+  width: auto;   /* Adjust the width as needed */
+  max-width: 200px;
+  z-index: 1000 !important;
+  background-color: red !important;
+  font-size: 14px;
+}
+
+.alert-dismissible .btn-close:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.alert-success {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+  border-color: #c3e6cb !important;
+}
+
+.alert-danger {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+  border-color: #f5c6cb !important;
+}
+
+/* Media queries for tablet screens */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .App {
+    flex-direction: column;
+  }
+
+  .firstDiv > img {
+    width: 100%;
+    height: auto; /* Maintain aspect ratio */
+  }
+
+  .brandImg {
+    width: 20%;
+    margin-left: 40%;
+  }
+
+  .brandLine {
+    margin-left: 20%;
+    margin-top: 5%;
+  }
+
+  .extra-signin {
+    margin-left: 15%;
+    margin-top: 10%;
+  }
+
+  .bottom-right-alert {
+    max-width: 170px; 
+    font-size: 12px; 
+    padding: 1.5em !important;
+  }
+}
+
+/* Media queries for mobile screens */
+@media (max-width: 767px) {
+  .App {
+    flex-direction: column;
+  }
+
+  .firstDiv > img {
+    width: 100%;
+    height: auto; /* Maintain aspect ratio */
+  }
+
+  .brandImg {
+    width: 30%;
+    margin-left: 35%;
+  }
+
+  .brandLine {
+    margin-left: 20%;
+    margin-top: 4%;
+  }
+
+  .extra-signin {
+    margin-left: 8%;
+    margin-top: 8%;
+  }
+
+  .bottom-right-alert {
+    max-width: 150px;
+    font-size: 9px;
+    height: auto; 
+    padding: 2em !important;
+  }
+}
