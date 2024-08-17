@@ -50,7 +50,7 @@ function Register() {
 
     try {
       const response = await axios.post(
-        "http://localhost:12676/users/sendOTP",
+        "https://simplifi-backend-production.up.railway.app/users/sendOTP",
         {
           ...formData,
           mobile: mobileWithIsd,
@@ -87,7 +87,7 @@ function Register() {
     if (/^\d{6}$/.test(otp)) {
       try {
         const response = await axios.post(
-          "http://localhost:12676/users/verifyOTP",
+          "https://simplifi-backend-production.up.railway.app/users/verifyOTP",
           { otp, mobile: formData.isdCode + formData.mobile },
           {
             headers: {
