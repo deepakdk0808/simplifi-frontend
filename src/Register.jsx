@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Row, Col, Form, Button, Alert } from "react-bootstrap";
+import { Row, Col, Form, Button, Alert, Modal } from "react-bootstrap";
 import "./App.css";
 
 function Register() {
@@ -15,6 +15,8 @@ function Register() {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertVariant, setAlertVariant] = useState("");
   const [showAlert, setShowAlert] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [otp, setOtp] = useState("");
 
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all")
@@ -64,6 +66,8 @@ function Register() {
         setAlertMessage("OTP sent successfully!");
         setAlertVariant("success");
         setShowAlert(true);
+        setShowModal(true);
+        setTimeout(() => setShowAlert(false), 1000);
       }
     } catch (error) {
       const errors = error.response?.data?.errors;
@@ -75,6 +79,80 @@ function Register() {
       }
       setAlertVariant("danger");
       setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000);
+    }
+  };
+
+  const handleOtpSubmit = async () => {
+    if (/^\d{6}$/.test(otp)) {
+      try {
+        const response = await axios.post(
+          "http://localhost:12676/users/verifyOTP",
+          { otp, mobile: formData.isdCode + formData.mobile },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          setAlertMessage("OTP verified successfully!");
+          setAlertVariant("success");
+          setShowAlert(true);
+          setShowModal(false);
+          setTimeout(() => setShowAlert(false), 2000);
+        }
+      } catch (error) {
+        console.error("Error verifying OTP:", error);
+
+        if (error.response) {
+          const errorMsg = error.response.data.error;
+
+          switch (error.response.status) {
+            case 404:
+              setAlertMessage("User not found!");
+              break;
+            case 429:
+              if (errorMsg.includes("OTP request limit exceeded")) {
+                setAlertMessage("OTP request limit exceeded!");
+              } else if (
+                errorMsg.includes("OTP invalid attempts limit exceeded")
+              ) {
+                setAlertMessage("Too many invalid attempts.Try again later.");
+              }
+              break;
+            case 400:
+              if (errorMsg === "Invalid OTP") {
+                setAlertMessage("Invalid OTP!");
+              } else if (errorMsg === "OTP has expired") {
+                setAlertMessage("OTP has expired!");
+              } else {
+                setAlertMessage(
+                  "OTP verification failed due to an unknown error."
+                );
+              }
+              break;
+            default:
+              setAlertMessage("OTP verification failed!");
+          }
+          setAlertVariant("danger");
+          setShowAlert(true);
+          setTimeout(() => setShowAlert(false), 2000);
+        } else {
+          setAlertMessage(
+            "An unexpected error occurred. Please try again later."
+          );
+          setAlertVariant("danger");
+          setShowAlert(true);
+          setTimeout(() => setShowAlert(false), 2000);
+        }
+      }
+    } else {
+      setAlertMessage("Please enter a valid 6-digit OTP.");
+      setAlertVariant("warning");
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 2000);
     }
   };
 
@@ -82,12 +160,7 @@ function Register() {
     <div className="App">
       <div className="firstDiv">
         {showAlert && (
-          <Alert
-            variant={alertVariant}
-            onClose={() => setShowAlert(false)}
-            dismissible
-            className="bottom-right-alert"
-          >
+          <Alert variant={alertVariant} className="bottom-right-alert">
             {alertMessage}
           </Alert>
         )}
@@ -234,6 +307,42 @@ function Register() {
         </Form>
         <p className="extra-signin">Already have an account? Sign In</p>
       </div>
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        
+      >
+        <Modal.Header  closeButton>
+          <Modal.Title
+            style={{
+              fontFamily: "Arial, Helvetica, sans-serif",
+              fontSize: "medium",
+              fontWeight: "light",
+            }}
+          >
+            Enter OTP
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body >
+          <input
+            type="text"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            maxLength="6"
+            pattern="\d*"
+            placeholder="6-digit OTP"
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            className="custom-button"
+            variant="primary"
+            onClick={handleOtpSubmit}
+          >
+            OTP
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

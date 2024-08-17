@@ -115,6 +115,8 @@ html, body {
   border-color: #f5c6cb !important;
 }
 
+
+
 /* Media queries for tablet screens */
 @media (min-width: 768px) and (max-width: 1024px) {
   .App {
@@ -148,6 +150,14 @@ html, body {
   }
 }
 
+
+
+  .modal-body input{
+    width: 100%;
+  }
+
+ 
+
 /* Media queries for mobile screens */
 @media (max-width: 767px) {
   .App {
@@ -180,4 +190,5 @@ html, body {
     height: auto; 
     padding: 2em !important;
   }
+
 }
