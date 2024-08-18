@@ -48,24 +48,22 @@ html, body {
 
 .brandLine {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: medium;
+  font-size: 15px;
   font-weight: lighter;
   margin-left: 39%;
-  margin-top: 6%;
-  line-height: 1;
-  word-spacing: 0.2em;
-  letter-spacing: 0.09em;
+  margin-top: 4.4%;
+  word-spacing: 0.1em;
+  letter-spacing: 0.05em;
 }
 
 .extra-signin {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: medium;
+  font-size: 15px;
   font-weight: lighter;
   margin-left: 27%;
-  margin-top: 16%;
-  line-height: 1;
-  word-spacing: 0.2em;
-  letter-spacing: 0.09em;
+  margin-top: 8%;
+  word-spacing: 0.1em;
+  letter-spacing: 0.05em;
 }
 
 .custom-outline:focus {
@@ -78,6 +76,7 @@ html, body {
 
 .custom-formLabel {
   font-weight: lighter;
+  font-size: 12px;
 }
 
 .custom-button {
@@ -85,6 +84,7 @@ html, body {
   background-color: orange !important;
   border: transparent !important;
   border-radius: 15px !important;
+  margin-top: 8px;
 }
 
 .bottom-right-alert {
@@ -94,8 +94,10 @@ html, body {
   width: auto;   /* Adjust the width as needed */
   max-width: 200px;
   z-index: 1000 !important;
-  background-color: red !important;
+  background-color: orange !important;
   font-size: 14px;
+  padding: 2px !important;
+  border-radius: 0px !important;
 }
 
 .alert-dismissible .btn-close:focus {
@@ -104,13 +106,13 @@ html, body {
 }
 
 .alert-success {
-  background-color: #d4edda !important;
+  background-color: orange !important;
   color: #155724 !important;
   border-color: #c3e6cb !important;
 }
 
 .alert-danger {
-  background-color: #f8d7da !important;
+  background-color: orange !important;
   color: #721c24 !important;
   border-color: #f5c6cb !important;
 }

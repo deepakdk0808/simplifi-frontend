@@ -46,14 +46,14 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const mobileWithIsd = formData.isdCode + formData.mobile;
+    console.log("Form data handle submit:", formData,formData.isdCode,formData.mobile);
 
     try {
       const response = await axios.post(
         "https://simplifi-backend-production.up.railway.app/users/sendOTP",
         {
           ...formData,
-          mobile: mobileWithIsd,
+          mobile: formData.mobile,
         },
         {
           headers: {
@@ -67,28 +67,32 @@ function Register() {
         setAlertVariant("success");
         setShowAlert(true);
         setShowModal(true);
-        setTimeout(() => setShowAlert(false), 1000);
+        setTimeout(() => setShowAlert(false), 3000);
       }
     } catch (error) {
-      const errors = error.response?.data?.errors;
-      if (Array.isArray(errors)) {
+      console.error("Error sending OTP:", error.response?.data);
+      const errors = error.response?.data?.errors || [];
+      if (Array.isArray(errors) && errors.length > 0) {
         const errorMessages = errors.map((err) => err.msg).join("\n");
         setAlertMessage(errorMessages);
+      } else if (error.response?.data?.error) {
+        setAlertMessage(error.response.data.error);
       } else {
         setAlertMessage("An unexpected error occurred.");
       }
       setAlertVariant("danger");
       setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 2000);
+      setTimeout(() => setShowAlert(false), 3000);
     }
   };
+
 
   const handleOtpSubmit = async () => {
     if (/^\d{6}$/.test(otp)) {
       try {
         const response = await axios.post(
           "https://simplifi-backend-production.up.railway.app/users/verifyOTP",
-          { otp, mobile: formData.isdCode + formData.mobile },
+          { otp, mobile: formData.mobile },
           {
             headers: {
               "Content-Type": "application/json",
@@ -96,12 +100,14 @@ function Register() {
           }
         );
 
+        console.log("OTP verification response:", response);
+
         if (response.status === 200) {
           setAlertMessage("OTP verified successfully!");
           setAlertVariant("success");
           setShowAlert(true);
           setShowModal(false);
-          setTimeout(() => setShowAlert(false), 2000);
+          setTimeout(() => setShowAlert(false), 3000);
         }
       } catch (error) {
         console.error("Error verifying OTP:", error);
@@ -138,21 +144,21 @@ function Register() {
           }
           setAlertVariant("danger");
           setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 2000);
+          setTimeout(() => setShowAlert(false), 3000);
         } else {
           setAlertMessage(
             "An unexpected error occurred. Please try again later."
           );
           setAlertVariant("danger");
           setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 2000);
+          setTimeout(() => setShowAlert(false), 3000);
         }
       }
     } else {
       setAlertMessage("Please enter a valid 6-digit OTP.");
       setAlertVariant("warning");
       setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 2000);
+      setTimeout(() => setShowAlert(false), 3000);
     }
   };
 
@@ -161,7 +167,9 @@ function Register() {
       <div className="firstDiv">
         {showAlert && (
           <Alert variant={alertVariant} className="bottom-right-alert">
-            {alertMessage}
+            {alertMessage.split("\n").map((msg, index) => (
+              <div key={index}>{msg}</div>
+            ))}
           </Alert>
         )}
         <img src="/sidePanel_new-iCiYVcEK.svg" alt="Infollion-Image" />
@@ -176,7 +184,7 @@ function Register() {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "16px",
+            gap: "1px",
             width: "60%",
             margin: "0 auto",
           }}
@@ -188,7 +196,7 @@ function Register() {
                   className="custom-formLabel"
                   style={{ marginBottom: "0px" }}
                 >
-                  Mr/Mrs
+                  Mr/Mrs<span className="required">*</span>
                 </Form.Label>
                 <Form.Select
                   name="salutation"
@@ -217,7 +225,7 @@ function Register() {
                   className="custom-formLabel"
                   style={{ marginBottom: "0px" }}
                 >
-                  Name
+                  Name<span className="required">*</span>
                 </Form.Label>
                 <Form.Control
                   type="text"
@@ -239,7 +247,7 @@ function Register() {
                   className="custom-formLabel"
                   style={{ marginBottom: "0px" }}
                 >
-                  ISD Code
+                  ISD Code<span className="required">*</span>
                 </Form.Label>
                 <Form.Select
                   name="isdCode"
@@ -256,7 +264,7 @@ function Register() {
                   <option value="" disabled hidden></option>
                   {countryCodes.map((code, index) => (
                     <option key={`${code.value}-${index}`} value={code.value}>
-                      {code.label}
+                      {`${code.label.slice(0, 3)} (${code.value})`}
                     </option>
                   ))}
                 </Form.Select>
@@ -268,7 +276,7 @@ function Register() {
                   className="custom-formLabel"
                   style={{ marginBottom: "0px" }}
                 >
-                  Mobile Number
+                  Mobile Number<span className="required">*</span>
                 </Form.Label>
                 <Form.Control
                   type="tel"
@@ -288,7 +296,7 @@ function Register() {
               className="custom-formLabel"
               style={{ marginBottom: "0px" }}
             >
-              Email
+              Email<span className="required">*</span>
             </Form.Label>
             <Form.Control
               type="email"
@@ -307,12 +315,8 @@ function Register() {
         </Form>
         <p className="extra-signin">Already have an account? Sign In</p>
       </div>
-      <Modal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        
-      >
-        <Modal.Header  closeButton>
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
           <Modal.Title
             style={{
               fontFamily: "Arial, Helvetica, sans-serif",
@@ -323,7 +327,7 @@ function Register() {
             Enter OTP
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body >
+        <Modal.Body>
           <input
             type="text"
             value={otp}
