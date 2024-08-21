@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Row, Col, Form, Button, Alert, Modal } from "react-bootstrap";
 import "./App.css";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
   const [countryCodes, setCountryCodes] = useState([]);
@@ -17,6 +18,7 @@ function Register() {
   const [showAlert, setShowAlert] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [otp, setOtp] = useState("");
+  const navigate=useNavigate();
 
   useEffect(() => {
     fetch("https://restcountries.com/v3.1/all")
@@ -45,7 +47,6 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form data handle submit:", formData);
 
     try {
       const response = await axios.post(
@@ -102,38 +103,53 @@ function Register() {
 
 
   const handleOtpSubmit = async () => {
-    const otp = formData.mobile.slice(-6); // Extract last 6 digits from mobile number
+    const otp = formData.mobile.slice(-6); 
 
     if (/^\d{6}$/.test(otp)) {
       try {
-        const response = await axios.post(
-          "https://colo-dev.infollion.com/api/v1/self-registration/verify-otp",
-          {
-            action: "SelfRegister",
-            otp: otp,
-            email: formData.email,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
 
-        if (response.data.success) {
-          setAlertMessage("OTP verified successfully!");
-          setAlertVariant("success");
-          setShowAlert(true);
-          setShowModal(false);
-          setTimeout(() => setShowAlert(false), 6000);
-        } else {
-          console.log("Response message:", response.data.message); 
-          setAlertMessage(response.data.message || "OTP verification failed!");
-          setAlertVariant("danger");
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 6000);
-        }
-      } catch (error) {
+        //actual logic for otp verification,but API is not working 
+        
+        // const response = await axios.post(
+        //   "https://colo-dev.infollion.com/api/v1/self-registration/verify-otp",
+        //   {
+        //     action: "SelfRegister",
+        //     otp: otp,
+        //     email: formData.email,
+        //   },
+        //   {
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //   }
+        // );
+
+        // if (response.data.success) {
+        //   setAlertMessage("OTP verified successfully!");
+        //   setAlertVariant("success");
+        //   setShowAlert(true);
+        //   setShowModal(false);
+        //   setTimeout(() =>{ setShowAlert(false)
+        //     navigate('/success')
+        //   }, 6000);
+        // } else {
+        //   setAlertMessage(response.data.message || "OTP verification failed!");
+        //   setAlertVariant("danger");
+        //   setShowAlert(true);
+        //   setTimeout(() => setShowAlert(false), 6000);
+        // }
+
+        // Hardcoded success response for testing
+        setAlertMessage("OTP verified successfully! (Hardcoded)");
+        setAlertVariant("success");
+        setShowAlert(true);
+        setShowModal(false);
+        setTimeout(() => {
+          setShowAlert(false);
+          navigate("/success");
+        }, 6000);
+      }
+       catch (error) {
         console.error("Error verifying OTP:", error.response?.data);
         const errorMsg =
           error.response?.data?.message || "An unexpected error occurred.";
