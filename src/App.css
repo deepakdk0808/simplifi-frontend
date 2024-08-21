@@ -125,9 +125,8 @@ html, body {
     flex-direction: column;
   }
 
-  .firstDiv > img {
-    width: 100%;
-    height: auto; /* Maintain aspect ratio */
+  .firstDiv  {
+   display: none;
   }
 
   .brandImg {
@@ -166,9 +165,8 @@ html, body {
     flex-direction: column;
   }
 
-  .firstDiv > img {
-    width: 100%;
-    height: auto; /* Maintain aspect ratio */
+  .firstDiv  {
+   display: none;
   }
 
   .brandImg {

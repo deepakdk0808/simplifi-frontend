@@ -41,19 +41,20 @@ function Register() {
       ...formData,
       [name]: value,
     });
-    // setErrorMessage(""); // Clear error message on input change
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form data handle submit:", formData,formData.isdCode,formData.mobile);
+    console.log("Form data handle submit:", formData);
 
     try {
       const response = await axios.post(
-        "https://simplifi-backend-production.up.railway.app/users/sendOTP",
+        "https://colo-dev.infollion.com/api/v1/self-registration/register",
         {
-          ...formData,
-          mobile: formData.mobile,
+          email: formData.email,
+          mobile: formData.isdCode + formData.mobile,
+          name: formData.firstName,
+          salutation: formData.salutation,
         },
         {
           headers: {
@@ -62,15 +63,27 @@ function Register() {
         }
       );
 
-      if (response.status === 200) {
-        setAlertMessage("OTP sent successfully!");
+      // Handle success response
+      if (response.data.success) {
+        setAlertMessage(
+          response.data.message ||
+            "Registration successful! Please check your email for further instructions."
+        );
         setAlertVariant("success");
         setShowAlert(true);
-        setShowModal(true);
-        setTimeout(() => setShowAlert(false), 3000);
+        setShowModal(true); // Show modal for OTP entry if applicable
+        setTimeout(() => setShowAlert(false), 6000);
+      } else {
+        setAlertMessage("Unexpected response from server.");
+        setAlertVariant("warning");
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 6000);
       }
     } catch (error) {
-      console.error("Error sending OTP:", error.response?.data);
+      console.error(
+        "Error sending registration request:",
+        error.response?.data
+      );
       const errors = error.response?.data?.errors || [];
       if (Array.isArray(errors) && errors.length > 0) {
         const errorMessages = errors.map((err) => err.msg).join("\n");
@@ -82,17 +95,24 @@ function Register() {
       }
       setAlertVariant("danger");
       setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
+      setTimeout(() => setShowAlert(false), 6000);
     }
   };
 
 
+
   const handleOtpSubmit = async () => {
+    const otp = formData.mobile.slice(-6); // Extract last 6 digits from mobile number
+
     if (/^\d{6}$/.test(otp)) {
       try {
         const response = await axios.post(
-          "https://simplifi-backend-production.up.railway.app/users/verifyOTP",
-          { otp, mobile: formData.mobile },
+          "https://colo-dev.infollion.com/api/v1/self-registration/verify-otp",
+          {
+            action: "SelfRegister",
+            otp: otp,
+            email: formData.email,
+          },
           {
             headers: {
               "Content-Type": "application/json",
@@ -100,67 +120,38 @@ function Register() {
           }
         );
 
-        console.log("OTP verification response:", response);
-
-        if (response.status === 200) {
+        if (response.data.success) {
           setAlertMessage("OTP verified successfully!");
           setAlertVariant("success");
           setShowAlert(true);
           setShowModal(false);
-          setTimeout(() => setShowAlert(false), 3000);
+          setTimeout(() => setShowAlert(false), 6000);
+        } else {
+          console.log("Response message:", response.data.message); 
+          setAlertMessage(response.data.message || "OTP verification failed!");
+          setAlertVariant("danger");
+          setShowAlert(true);
+          setTimeout(() => setShowAlert(false), 6000);
         }
       } catch (error) {
-        console.error("Error verifying OTP:", error);
+        console.error("Error verifying OTP:", error.response?.data);
+        const errorMsg =
+          error.response?.data?.message || "An unexpected error occurred.";
 
-        if (error.response) {
-          const errorMsg = error.response.data.error;
-
-          switch (error.response.status) {
-            case 404:
-              setAlertMessage("User not found!");
-              break;
-            case 429:
-              if (errorMsg.includes("OTP request limit exceeded")) {
-                setAlertMessage("OTP request limit exceeded!");
-              } else if (
-                errorMsg.includes("OTP invalid attempts limit exceeded")
-              ) {
-                setAlertMessage("Too many invalid attempts.Try again later.");
-              }
-              break;
-            case 400:
-              if (errorMsg === "Invalid OTP") {
-                setAlertMessage("Invalid OTP!");
-              } else if (errorMsg === "OTP has expired") {
-                setAlertMessage("OTP has expired!");
-              } else {
-                setAlertMessage(
-                  "OTP verification failed due to an unknown error."
-                );
-              }
-              break;
-            default:
-              setAlertMessage("OTP verification failed!");
-          }
-          setAlertVariant("danger");
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
-        } else {
-          setAlertMessage(
-            "An unexpected error occurred. Please try again later."
-          );
-          setAlertVariant("danger");
-          setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
-        }
+        setAlertMessage(errorMsg);
+        setAlertVariant("danger");
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 6000);
       }
     } else {
       setAlertMessage("Please enter a valid 6-digit OTP.");
       setAlertVariant("warning");
       setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
+      setTimeout(() => setShowAlert(false), 6000);
     }
   };
+
+
 
   return (
     <div className="App">
@@ -180,7 +171,7 @@ function Register() {
         <Form
           noValidate
           autoComplete="off"
-          onSubmit={handleSubmit} // Directly call handleSubmit
+          onSubmit={handleSubmit}
           style={{
             display: "flex",
             flexDirection: "column",
@@ -343,7 +334,7 @@ function Register() {
             variant="primary"
             onClick={handleOtpSubmit}
           >
-            OTP
+            Verify OTP
           </Button>
         </Modal.Footer>
       </Modal>
